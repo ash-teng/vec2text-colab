@@ -1,6 +1,9 @@
 # vec2text Colab LMI Legacy Notebook
 
-[English](README.md) | 中文
+<p>
+  <a href="README.md"><kbd>English</kbd></a>
+  <a href="README.zh-CN.md"><kbd>中文</kbd></a>
+</p>
 
 这个仓库包含用于运行 `vec2text` 实验的 Colab notebook。当前分支的主要 notebook 是：
 

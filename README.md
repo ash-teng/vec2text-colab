@@ -1,6 +1,9 @@
 # vec2text Colab LMI Legacy Notebook
 
-English | [Chinese](README.zh-CN.md)
+<p>
+  <a href="README.md"><kbd>English</kbd></a>
+  <a href="README.zh-CN.md"><kbd>中文</kbd></a>
+</p>
 
 This repository contains Colab notebooks for running `vec2text` experiments. The main notebook in this branch is:
 
