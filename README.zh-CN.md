@@ -59,6 +59,8 @@
 
 抽样 prompts，按需加载 LMI inverter 和 corrector，用 `lmi_corrector` 跑 corrected inversion，打印 reference/prediction，并保存 summary metrics 和逐样本输出。
 
+这一节现在默认使用严格 shape validation。也就是说，如果 logits、hypothesis logits 或 checkpoint 里的 `unigram` buffer 和模型期望形状不一致，notebook 会直接报错，不再静默用 0 补齐。只有做不可比较的 smoke test 时，才建议显式设置 `ALLOW_ZERO_PAD_COMPAT = True`；结果 JSON 会记录 `shape_check_mode`、`zero_pad_compat_enabled` 和最后一次 shape check。
+
 输出文件名较短，且不会覆盖旧结果，例如：
 
 ```text
