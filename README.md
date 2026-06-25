@@ -59,6 +59,8 @@ Adds tied-weight metadata expected by newer Transformers versions.
 
 Samples prompts, loads the LMI inverter and corrector if needed, runs corrected inversion with `lmi_corrector`, prints reference/prediction pairs, and saves both summary metrics and sample-level outputs.
 
+This section now defaults to strict shape validation for the LMI corrector path. If the logits, hypothesis logits, or checkpoint `unigram` buffer do not match the expected model shape, the notebook raises an error instead of silently padding with zeros. For a non-comparable smoke test only, set `ALLOW_ZERO_PAD_COMPAT = True`; result JSON records `shape_check_mode`, `zero_pad_compat_enabled`, and the last observed shape check.
+
 Outputs use short, non-overwriting filenames such as:
 
 ```text
