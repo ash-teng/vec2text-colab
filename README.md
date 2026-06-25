@@ -5,7 +5,7 @@
   <a href="README.zh-CN.md"><kbd>中文</kbd></a>
 </p>
 
-This branch keeps a shorter Colab workflow for producing LMI corrected sample outputs. It removes the smoke-test, comparison, and optional larger-eval sections from the legacy/debug notebook.
+This branch keeps a shorter Colab workflow for producing paper-aligned LMI one-step inverter metrics first, with corrected sample outputs kept as an optional sanity check.
 
 Main notebook:
 
@@ -55,9 +55,21 @@ Imports `vec2text` from the cloned local repository and verifies the import path
 
 Adds tied-weight metadata expected by newer Transformers versions.
 
-## Section 6. LMI Corrected Sample Eval
+## Section 6. Official-Style One-Step Eval
 
-Samples prompts, loads the LMI inverter and corrector if needed, runs corrected inversion with `lmi_corrector`, prints reference/prediction pairs, and saves both summary metrics and sample-level outputs.
+Loads the pretrained LMI inverter through `vec2text.analyze_utils.load_experiment_and_trainer_from_pretrained(...)` and runs `trainer.evaluate(...)`. This reports the upstream generation metrics such as BLEU, token-set F1, ROUGE, exact match, and length statistics.
+
+This section does not load the corrected LMI `CorrectorEncoderFromLogitsModel`, so it avoids the zero-padding compatibility path. Start with `OFFICIAL_NUM_SAMPLES = 100` for a quick check, then raise it toward 1000 for a more paper-like run.
+
+Outputs use short, non-overwriting filenames such as:
+
+```text
+official_eval_validation_n100_224825.json
+```
+
+## Section 7. Optional LMI Corrected Sample Eval
+
+Samples Python-code prompts, loads the LMI inverter and corrector if needed, runs corrected inversion with `lmi_corrector`, prints reference/prediction pairs, and saves both summary metrics and sample-level outputs. Use this as a sanity/compatibility check, not as the main paper-aligned result.
 
 Outputs use short, non-overwriting filenames such as:
 

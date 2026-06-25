@@ -5,7 +5,7 @@
   <a href="README.zh-CN.md"><kbd>中文</kbd></a>
 </p>
 
-这个分支保留较短的 Colab 流程，用来直接生成 LMI corrected sample outputs。legacy/debug notebook 里的 smoke test、对比 eval 和 optional larger eval 都已经删掉。
+这个分支保留较短的 Colab 流程，优先生成更接近论文表格口径的 LMI one-step inverter 指标，同时把 corrected sample outputs 保留为可选 sanity check。
 
 主要 notebook：
 
@@ -55,9 +55,21 @@
 
 补上新版 Transformers 期望存在的 tied-weight metadata。
 
-## 第 6 节：LMI Corrected Sample Eval
+## 第 6 节：Official-Style One-Step Eval
 
-抽样 prompts，按需加载 LMI inverter 和 corrector，用 `lmi_corrector` 跑 corrected inversion，打印 reference/prediction，并保存 summary metrics 和逐样本输出。
+通过 `vec2text.analyze_utils.load_experiment_and_trainer_from_pretrained(...)` 加载预训练 LMI inverter，并运行 `trainer.evaluate(...)`。这一节会输出上游评估指标，例如 BLEU、token-set F1、ROUGE、exact match 和长度统计。
+
+这一节不会加载 corrected LMI `CorrectorEncoderFromLogitsModel`，因此不会进入 0-padding compatibility 路径。建议先用 `OFFICIAL_NUM_SAMPLES = 100` 快速检查，跑通后再提高到接近 1000，结果会更接近论文复现口径。
+
+输出文件名较短，且不会覆盖旧结果，例如：
+
+```text
+official_eval_validation_n100_224825.json
+```
+
+## 第 7 节：Optional LMI Corrected Sample Eval
+
+抽样 Python-code prompts，按需加载 LMI inverter 和 corrector，用 `lmi_corrector` 跑 corrected inversion，打印 reference/prediction，并保存 summary metrics 和逐样本输出。这一节适合作为 sanity/compatibility check，不建议作为主要论文对齐结果。
 
 输出文件名较短，且不会覆盖旧结果，例如：
 
