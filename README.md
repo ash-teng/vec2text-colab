@@ -45,7 +45,7 @@ Default settings:
 
 ```python
 DEFENSE_DATASET_KEY = "python_code_alpaca"
-DEFENSE_NUM_SAMPLES = 100
+DEFENSE_NUM_SAMPLES = 10
 DEFENSE_EVAL_BATCH_SIZE = 1
 DEFENSE_EMBED_BATCH_SIZE = 4
 DEFENSE_METHODS = ["none", "sha256_full", "hmac_words", "redact_literals"]
@@ -76,7 +76,7 @@ When Google Drive is mounted, this branch uses this experiment root:
 Each Section 8 defense run creates a dated subfolder inside that root, for example:
 
 ```python
-/content/drive/MyDrive/vec2text_results/table2_defense_transformations/defense_20260630_153012_n100_python_code_alpaca
+/content/drive/MyDrive/vec2text_results/table2_defense_transformations/defense_20260630_153012_n10_python_code_alpaca
 ```
 
 This keeps repeated defense runs separate for comparison.
@@ -112,6 +112,6 @@ Use Section 7 only to document whether strict 5-step corrected inversion is poss
 2. Run Section 6 with the defaults above.
 3. Inspect the sample CSV in Google Drive to sanity-check predictions against references.
 4. If BLEU is reasonable, increase `OFFICIAL_NUM_SAMPLES` toward 1000.
-5. Run Section 8 with `DEFENSE_NUM_SAMPLES = 100` first.
-6. If the defense results look sane, increase `DEFENSE_NUM_SAMPLES` to 500 or 1000 for the final comparison.
+5. Run Section 8 with the default `DEFENSE_NUM_SAMPLES = 10` first as a smoke test.
+6. If the defense results look sane, increase `DEFENSE_NUM_SAMPLES` to 100, 500, or 1000 for the final comparison.
 7. Run Section 7 only as an optional strict/no-zero diagnostic.
