@@ -67,16 +67,30 @@ Section 8 saves:
 - `table2_defense_samples_...json`: sample-level rows for all methods
 - `table2_defense_samples_...csv`: spreadsheet-friendly table with `method`, original `reference`, `transformed_prompt`, and `prediction`
 
-When Google Drive is mounted, this branch writes results under:
+When Google Drive is mounted, this branch uses this experiment root:
 
 ```python
 /content/drive/MyDrive/vec2text_results/table2_defense_transformations
 ```
 
+Each Section 8 defense run creates a dated subfolder inside that root, for example:
+
+```python
+/content/drive/MyDrive/vec2text_results/table2_defense_transformations/defense_20260630_153012_n100_python_code_alpaca
+```
+
+This keeps repeated defense runs separate for comparison.
+
 You can change the folder before running Section 3.2:
 
 ```python
 DRIVE_EXPERIMENT_DIR = "my_custom_experiment_name"
+```
+
+You can also force a custom Section 8 run folder before running Section 8:
+
+```python
+DEFENSE_DRIVE_RUN_FOLDER = "defense_redact_only_20260630"
 ```
 
 One-way hash functions are intentionally included because they match the proposed defense idea, but they are not a complete encryption solution: after hashing the prompt, the LLM cannot recover the original task semantics without an external mechanism. Use them as a privacy upper bound / negative utility control, then compare against less destructive methods.
