@@ -27,6 +27,14 @@ OFFICIAL_KEEP_FROZEN_EMBEDDINGS = True
 
 第 6 节是主要的“不加密 baseline”。它走 upstream 的 `trainer.evaluate(...)`，不加载 corrected LMI model，所以不会进入手动补 0 的 compatibility workaround。
 
+第 6 节也会保存逐样本输出，方便直观看 pred/true：
+
+- `table2_official_eval_...json`：总指标和原文差距
+- `table2_official_samples_...json`：逐样本 prediction/reference 和单样本分数
+- `table2_official_samples_...csv`：适合在 Google Drive 或 Sheets 里打开的表格
+
+原文表格报告 BLEU、CS、Exact Match、Token F1。这个 notebook 会直接比较 BLEU、Exact Match、Token F1。它也会输出 upstream 的 `emb_cos_sim`，但这个值不是原文的 CS，因为原文 CS 使用 OpenAI `text-embeddings-ada-002` 语义 embedding 计算。
+
 ## 可选 strict 5-step 诊断
 
 第 7 节保留 `python_code_alpaca` 上的 5-step corrected diagnostic，但默认 strict：
@@ -42,6 +50,7 @@ OFFICIAL_KEEP_FROZEN_EMBEDDINGS = True
 
 1. 正常跑第 1-5.1 节。
 2. 用默认参数跑第 6 节。
-3. 如果 BLEU 看起来正常，再把 `OFFICIAL_NUM_SAMPLES` 提高到接近 1000。
-4. 第 7 节只作为可选 strict/no-zero 诊断。
-5. 在不加密 baseline 搞清楚之前，先不要开始加密实验。
+3. 在 Google Drive 里打开 sample CSV，肉眼检查 prediction/reference。
+4. 如果 BLEU 看起来正常，再把 `OFFICIAL_NUM_SAMPLES` 提高到接近 1000。
+5. 第 7 节只作为可选 strict/no-zero 诊断。
+6. 在不加密 baseline 搞清楚之前，先不要开始加密实验。

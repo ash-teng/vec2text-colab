@@ -27,6 +27,14 @@ The closest paper target is Table 2, raw `Llama-2 7B (LM)`, `Ours` on Alpaca Cod
 
 Section 6 is the main no-encryption baseline. It uses the upstream `trainer.evaluate(...)` path and does not load the corrected LMI model, so it avoids the manual zero-padding compatibility workaround.
 
+Section 6 also saves sample-level outputs for visual inspection:
+
+- `table2_official_eval_...json`: aggregate metrics and paper deltas
+- `table2_official_samples_...json`: prediction/reference rows with per-sample scores
+- `table2_official_samples_...csv`: spreadsheet-friendly table for Google Drive or Sheets
+
+The paper reports BLEU, CS, Exact Match, and Token F1. This notebook directly compares BLEU, Exact Match, and Token F1. It also reports the upstream `emb_cos_sim`, but that value is not the same as the paper's CS metric because the paper used OpenAI `text-embeddings-ada-002` semantic embeddings for CS.
+
 ## Optional Strict 5-Step Diagnostic
 
 Section 7 keeps a 5-step corrected diagnostic on `python_code_alpaca`, but it is strict by default:
@@ -42,6 +50,7 @@ Use Section 7 only to document whether strict 5-step corrected inversion is poss
 
 1. Run Sections 1-5.1 as usual.
 2. Run Section 6 with the defaults above.
-3. If BLEU is reasonable, increase `OFFICIAL_NUM_SAMPLES` toward 1000.
-4. Run Section 7 only as an optional strict/no-zero diagnostic.
-5. Do not start encryption experiments until the no-encryption baseline is understood.
+3. Inspect the sample CSV in Google Drive to sanity-check predictions against references.
+4. If BLEU is reasonable, increase `OFFICIAL_NUM_SAMPLES` toward 1000.
+5. Run Section 7 only as an optional strict/no-zero diagnostic.
+6. Do not start encryption experiments until the no-encryption baseline is understood.
