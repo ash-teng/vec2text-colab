@@ -67,6 +67,18 @@ Section 8 saves:
 - `table2_defense_samples_...json`: sample-level rows for all methods
 - `table2_defense_samples_...csv`: spreadsheet-friendly table with `method`, original `reference`, `transformed_prompt`, and `prediction`
 
+When Google Drive is mounted, this branch writes results under:
+
+```python
+/content/drive/MyDrive/vec2text_results/table2_defense_transformations
+```
+
+You can change the folder before running Section 3.2:
+
+```python
+DRIVE_EXPERIMENT_DIR = "my_custom_experiment_name"
+```
+
 One-way hash functions are intentionally included because they match the proposed defense idea, but they are not a complete encryption solution: after hashing the prompt, the LLM cannot recover the original task semantics without an external mechanism. Use them as a privacy upper bound / negative utility control, then compare against less destructive methods.
 
 ## Optional Strict 5-Step Diagnostic
