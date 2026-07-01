@@ -1,88 +1,47 @@
-# vec2text Colab LMI Run-Only Notebook
+# vec2text Colab LMI Table 2 Baseline Notebook
 
-<p>
-  <a href="README.md"><kbd>English</kbd></a>
-  <a href="README.zh-CN.md"><kbd>中文</kbd></a>
-</p>
-
-This branch keeps a shorter Colab workflow for producing paper-aligned LMI one-step inverter metrics first, with corrected sample outputs kept as an optional sanity check.
+This branch focuses on a Table 2-style baseline for the Language Model Inversion reproduction.
 
 Main notebook:
 
 - `colab_lmi_legacy.ipynb`
 
-## Section 1. Check GPU
+## What This Branch Does
 
-Checks PyTorch, CUDA, and the current GPU. Use this to confirm Colab is running on a GPU runtime before starting the heavier LMI path.
+Section 6 now defaults to the paper's Table 2 `Alpaca Code Generation` setting:
 
-## Section 2. Clone the Repository and Install Dependencies
-
-Clones upstream `vec2text`, installs dependencies, pins the legacy-compatible Hugging Face stack, removes conflicting `peft`, installs `vec2text` in editable mode, and automatically restarts the Colab runtime.
-
-After the automatic restart, do not rerun the install cell. Continue from "Continue Here After Restart".
-
-## Section 3. Runtime Setup
-
-Sets cache and tokenizer environment variables used by the notebook.
-
-## Section 3.1. Optional Hugging Face Token
-
-Loads `HF_TOKEN` from Colab Secrets and mirrors it to `LLAMA_TOKEN`. This is needed for the LMI path because it loads `meta-llama/Llama-2-7b-hf`.
-
-## Section 3.2. Optional Google Drive Save
-
-Mounts Google Drive and creates:
-
-```text
-/content/drive/MyDrive/vec2text_results
+```python
+OFFICIAL_DATASET_KEY = "python_code_alpaca"
+OFFICIAL_NUM_SAMPLES = 100
+OFFICIAL_BATCH_SIZE = 1
+OFFICIAL_KEEP_FROZEN_EMBEDDINGS = True
 ```
 
-If mounted, result files are copied there after the eval cell finishes.
+The closest paper target is Table 2, raw `Llama-2 7B (LM)`, `Ours` on Alpaca Code Generation:
 
-## Section 4. Colab Compatibility Patches
+| Metric | Paper Target |
+|---|---:|
+| BLEU | 46.22 |
+| Exact Match | 10.5 |
+| Token F1 | 74.9 |
 
-Applies the runtime patches needed for the current Colab and Transformers/Accelerate environment. These patches handle old checkpoint behavior, model loading, dtype handling, trainer defaults, and generation config compatibility.
+Section 6 is the main no-encryption baseline. It uses the upstream `trainer.evaluate(...)` path and does not load the corrected LMI model, so it avoids the manual zero-padding compatibility workaround.
 
-## Section 4.2. Runtime Monkey Patch
+## Optional Strict 5-Step Diagnostic
 
-Applies a session-only Transformers/Accelerate model-loading patch for meta-device compatibility.
+Section 7 keeps a 5-step corrected diagnostic on `python_code_alpaca`, but it is strict by default:
 
-## Section 5. Import the Library
+- `num_steps = 5`
+- no created zero unigram buffer
+- no zero-padding compatibility for 32000/32256 shape mismatch
+- if the public checkpoint is missing the needed unigram or shape, the cell saves a failure JSON and raises
 
-Imports `vec2text` from the cloned local repository and verifies the import path.
+Use Section 7 only to document whether strict 5-step corrected inversion is possible without compatibility padding. Do not use a failed or compatibility-padded Section 7 run as the main paper-comparable result.
 
-## Section 5.1. Tied-Weights Compatibility Patch
+## Suggested Colab Order
 
-Adds tied-weight metadata expected by newer Transformers versions.
-
-## Section 6. Official-Style One-Step Eval
-
-Loads the pretrained LMI inverter through `vec2text.analyze_utils.load_experiment_and_trainer_from_pretrained(...)` and runs `trainer.evaluate(...)`. This reports the upstream generation metrics such as BLEU, token-set F1, ROUGE, exact match, and length statistics.
-
-This section does not load the corrected LMI `CorrectorEncoderFromLogitsModel`, so it avoids the zero-padding compatibility path. Start with `OFFICIAL_NUM_SAMPLES = 100` for a quick check, then raise it toward 1000 for a more paper-like run.
-
-Outputs use short, non-overwriting filenames such as:
-
-```text
-official_eval_validation_n100_224825.json
-```
-
-## Section 7. Optional LMI Corrected Sample Eval
-
-Samples Python-code prompts, loads the LMI inverter and corrector if needed, runs corrected inversion with `lmi_corrector`, prints reference/prediction pairs, and saves both summary metrics and sample-level outputs. Use this as a sanity/compatibility check, not as the main paper-aligned result.
-
-Outputs use short, non-overwriting filenames such as:
-
-```text
-lmi_corr_n10_s42_224825.json
-lmi_corr_n10_s42_224825_samples.json
-```
-
-Filename fields:
-
-- `corr`: corrected LMI path
-- `n10`: number of samples
-- `s42`: sample seed
-- `224825`: UTC time
-
-Change `sample_seed` if you want a different fixed random sample.
+1. Run Sections 1-5.1 as usual.
+2. Run Section 6 with the defaults above.
+3. If BLEU is reasonable, increase `OFFICIAL_NUM_SAMPLES` toward 1000.
+4. Run Section 7 only as an optional strict/no-zero diagnostic.
+5. Do not start encryption experiments until the no-encryption baseline is understood.
