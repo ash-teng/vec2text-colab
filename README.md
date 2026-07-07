@@ -95,6 +95,40 @@ DEFENSE_DRIVE_RUN_FOLDER = "defense_redact_only_20260630"
 
 One-way hash functions are intentionally included because they match the proposed defense idea, but they are not a complete encryption solution: after hashing the prompt, the LLM cannot recover the original task semantics without an external mechanism. Use them as a privacy upper bound / negative utility control, then compare against less destructive methods.
 
+## Real Estate JSON Inversion Baseline
+
+Section 9 runs a no-defense inversion baseline on a custom JSON list of real-estate questions.
+
+This branch includes:
+
+- `datasets/500_easy_houseqs_questions.json`
+
+Section 9 defaults to this dataset. In Colab, it first checks:
+
+```python
+/content/500_easy_houseqs_questions.json
+```
+
+If that file is not present, it downloads the branch copy from GitHub. You can replace it with your own JSON list or a JSON list of objects with a `question` field:
+
+```python
+REAL_ESTATE_QUESTIONS_JSON_PATH = "/content/my_questions.json"
+REAL_ESTATE_NUM_SAMPLES = 10      # smoke test
+REAL_ESTATE_NUM_SAMPLES = 500     # full run
+REAL_ESTATE_SAMPLE_MODE = "first" # or "random"
+REAL_ESTATE_SAMPLE_SEED = 42
+```
+
+Section 9 saves:
+
+- `real_estate_inversion_eval_...json`: aggregate metrics
+- `real_estate_inversion_samples_...json`: sample-level predictions
+- `real_estate_inversion_samples_...csv`: spreadsheet-friendly table with original question, tokenized reference, prediction, BLEU, token overlap, and sensitive-marker recall
+
+Use this section before defense runs. It answers:
+
+> Can the public LMI inverter recover real-estate user questions before any defense is applied?
+
 ## Optional Strict 5-Step Diagnostic
 
 Section 7 keeps a 5-step corrected diagnostic on `python_code_alpaca`, but it is strict by default:
@@ -109,9 +143,9 @@ Use Section 7 only to document whether strict 5-step corrected inversion is poss
 ## Suggested Colab Order
 
 1. Run Sections 1-5.1 as usual.
-2. Run Section 6 with the defaults above.
-3. Inspect the sample CSV in Google Drive to sanity-check predictions against references.
-4. If BLEU is reasonable, increase `OFFICIAL_NUM_SAMPLES` toward 1000.
-5. Run Section 8 with the default `DEFENSE_NUM_SAMPLES = 10` first as a smoke test.
-6. If the defense results look sane, increase `DEFENSE_NUM_SAMPLES` to 100, 500, or 1000 for the final comparison.
+2. For paper-aligned Table 2 reproduction, run Section 6 with the defaults above.
+3. For the real-estate custom dataset, run Section 9 instead of Section 6.
+4. Start Section 9 with `REAL_ESTATE_NUM_SAMPLES = 10`; then increase it to `500`.
+5. Inspect the sample CSV in Google Drive to sanity-check predictions against references.
+6. Run Section 8 only after the no-defense baseline is clear.
 7. Run Section 7 only as an optional strict/no-zero diagnostic.

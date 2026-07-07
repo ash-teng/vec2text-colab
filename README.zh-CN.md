@@ -35,6 +35,38 @@ OFFICIAL_KEEP_FROZEN_EMBEDDINGS = True
 
 原文表格报告 BLEU、CS、Exact Match、Token F1。这个 notebook 会直接比较 BLEU、Exact Match、Token F1。它也会输出 upstream 的 `emb_cos_sim`，但这个值不是原文的 CS，因为原文 CS 使用 OpenAI `text-embeddings-ada-002` 语义 embedding 计算。
 
+## 房地产 JSON inversion baseline
+
+第 9 节用于跑自定义房地产问题 JSON 的“不加密 baseline inversion”。
+
+这个分支内置：
+
+- `datasets/500_easy_houseqs_questions.json`
+
+Colab 里第 9 节会先找：
+
+```python
+/content/500_easy_houseqs_questions.json
+```
+
+如果没有这个文件，就会从当前 GitHub 分支自动下载内置 dataset。你也可以换成自己的 JSON list，或者带 `question` 字段的 JSON object list：
+
+```python
+REAL_ESTATE_QUESTIONS_JSON_PATH = "/content/my_questions.json"
+REAL_ESTATE_NUM_SAMPLES = 10      # 先 smoke test
+REAL_ESTATE_NUM_SAMPLES = 500     # 再完整跑
+REAL_ESTATE_SAMPLE_MODE = "first" # 或 "random"
+REAL_ESTATE_SAMPLE_SEED = 42
+```
+
+第 9 节会保存：
+
+- `real_estate_inversion_eval_...json`：总体指标
+- `real_estate_inversion_samples_...json`：逐样本 prediction
+- `real_estate_inversion_samples_...csv`：适合放 Google Drive / Sheets 里看的表格，包含 original question、tokenized reference、prediction、BLEU、token overlap、sensitive-marker recall
+
+建议先跑第 9 节确认“不加防御时能不能反推出房地产问题”，再跑 defense。
+
 ## 可选 strict 5-step 诊断
 
 第 7 节保留 `python_code_alpaca` 上的 5-step corrected diagnostic，但默认 strict：
@@ -49,8 +81,9 @@ OFFICIAL_KEEP_FROZEN_EMBEDDINGS = True
 ## 建议 Colab 顺序
 
 1. 正常跑第 1-5.1 节。
-2. 用默认参数跑第 6 节。
-3. 在 Google Drive 里打开 sample CSV，肉眼检查 prediction/reference。
-4. 如果 BLEU 看起来正常，再把 `OFFICIAL_NUM_SAMPLES` 提高到接近 1000。
-5. 第 7 节只作为可选 strict/no-zero 诊断。
-6. 在不加密 baseline 搞清楚之前，先不要开始加密实验。
+2. 如果要复现论文 Table 2，跑第 6 节。
+3. 如果要跑你的房地产问题 JSON，跑第 9 节，不需要先跑第 6 节。
+4. 第 9 节先用 `REAL_ESTATE_NUM_SAMPLES = 10` 试跑，再改成 `500`。
+5. 在 Google Drive 里打开 sample CSV，肉眼检查 prediction/reference。
+6. baseline 搞清楚以后，再跑 defense。
+7. 第 7 节只作为可选 strict/no-zero 诊断。
