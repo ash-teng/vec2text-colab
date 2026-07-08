@@ -42,6 +42,7 @@ OFFICIAL_KEEP_FROZEN_EMBEDDINGS = True
 这个分支内置：
 
 - `datasets/500_easy_houseqs_questions.json`
+- `datasets/500_insurance_appeal_questions.json`
 
 Colab 里第 9 节会先找：
 
@@ -53,6 +54,8 @@ Colab 里第 9 节会先找：
 
 ```python
 REAL_ESTATE_QUESTIONS_JSON_PATH = "/content/my_questions.json"
+REAL_ESTATE_QUESTIONS_JSON_URL = "https://raw.githubusercontent.com/ash-teng/vec2text-colab/refs/heads/codex/real-estate-json-inversion/datasets/500_insurance_appeal_questions.json"
+REAL_ESTATE_RUN_LABEL = "insurance_appeal"
 REAL_ESTATE_NUM_SAMPLES = 10      # 先 smoke test
 REAL_ESTATE_NUM_SAMPLES = 500     # 再完整跑
 REAL_ESTATE_SAMPLE_MODE = "first" # 或 "random"

@@ -102,6 +102,7 @@ Section 9 runs a no-defense inversion baseline on a custom JSON list of real-est
 This branch includes:
 
 - `datasets/500_easy_houseqs_questions.json`
+- `datasets/500_insurance_appeal_questions.json`
 
 Section 9 defaults to this dataset. In Colab, it first checks:
 
@@ -113,6 +114,8 @@ If that file is not present, it downloads the branch copy from GitHub. You can r
 
 ```python
 REAL_ESTATE_QUESTIONS_JSON_PATH = "/content/my_questions.json"
+REAL_ESTATE_QUESTIONS_JSON_URL = "https://raw.githubusercontent.com/ash-teng/vec2text-colab/refs/heads/codex/real-estate-json-inversion/datasets/500_insurance_appeal_questions.json"
+REAL_ESTATE_RUN_LABEL = "insurance_appeal"
 REAL_ESTATE_NUM_SAMPLES = 10      # smoke test
 REAL_ESTATE_NUM_SAMPLES = 500     # full run
 REAL_ESTATE_SAMPLE_MODE = "first" # or "random"
