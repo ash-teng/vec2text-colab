@@ -18,6 +18,12 @@ ENGLISH_OUTPUT_PATHS = {
     "middle": DATASET_DIR / "500_python_code_alpaca_english_number_middle_seed42.json",
     "suffix": DATASET_DIR / "500_python_code_alpaca_english_number_suffix_seed42.json",
 }
+MOJIBAKE_OUTPUT_PATHS = {
+    "prefix": DATASET_DIR / "500_python_code_alpaca_mojibake_prefix_fixed.json",
+    "middle": DATASET_DIR / "500_python_code_alpaca_mojibake_middle_fixed.json",
+    "suffix": DATASET_DIR / "500_python_code_alpaca_mojibake_suffix_fixed.json",
+}
+MOJIBAKE_MARKER = "锟斤拷"
 NUMBER_WORDS = {
     1: "one",
     2: "two",
@@ -65,13 +71,17 @@ def main():
             build_position_datasets(references, [NUMBER_WORDS[number] for number in numbers]),
             ENGLISH_OUTPUT_PATHS,
         ),
+        "mojibake": (
+            build_position_datasets(references, [MOJIBAKE_MARKER] * len(references)),
+            MOJIBAKE_OUTPUT_PATHS,
+        ),
     }
 
-    for number_format, (datasets, output_paths) in dataset_groups.items():
+    for marker_type, (datasets, output_paths) in dataset_groups.items():
         for position, questions in datasets.items():
             assert len(questions) == len(references)
             assert len(set(questions)) == len(questions), (
-                f"duplicates found in {number_format} {position} dataset"
+                f"duplicates found in {marker_type} {position} dataset"
             )
             output_paths[position].write_text(
                 json.dumps(questions, ensure_ascii=False, indent=2) + "\n",
@@ -81,9 +91,9 @@ def main():
     print(f"Source questions: {len(references)}")
     print(f"Random seed: {SEED}")
     print(f"Number counts: {dict(sorted(Counter(numbers).items()))}")
-    for number_format, (datasets, output_paths) in dataset_groups.items():
+    for marker_type, (datasets, output_paths) in dataset_groups.items():
         for position, path in output_paths.items():
-            print(f"{number_format} {position}: {path.name}")
+            print(f"{marker_type} {position}: {path.name}")
             print(f"  first: {datasets[position][0]}")
 
 
