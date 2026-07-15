@@ -13,6 +13,23 @@ OUTPUT_PATHS = {
     "middle": DATASET_DIR / "500_python_code_alpaca_number_middle_seed42.json",
     "suffix": DATASET_DIR / "500_python_code_alpaca_number_suffix_seed42.json",
 }
+ENGLISH_OUTPUT_PATHS = {
+    "prefix": DATASET_DIR / "500_python_code_alpaca_english_number_prefix_seed42.json",
+    "middle": DATASET_DIR / "500_python_code_alpaca_english_number_middle_seed42.json",
+    "suffix": DATASET_DIR / "500_python_code_alpaca_english_number_suffix_seed42.json",
+}
+NUMBER_WORDS = {
+    1: "one",
+    2: "two",
+    3: "three",
+    4: "four",
+    5: "five",
+    6: "six",
+    7: "seven",
+    8: "eight",
+    9: "nine",
+    10: "ten",
+}
 
 
 def insert_at_middle(text, number):
@@ -25,6 +42,14 @@ def insert_at_middle(text, number):
     return f"{text[:insertion_point]}{number} {text[insertion_point:]}"
 
 
+def build_position_datasets(references, labels):
+    return {
+        "prefix": [f"{label} {text}" for text, label in zip(references, labels)],
+        "middle": [insert_at_middle(text, label) for text, label in zip(references, labels)],
+        "suffix": [f"{text} {label}" for text, label in zip(references, labels)],
+    }
+
+
 def main():
     references = json.loads(SOURCE_PATH.read_text(encoding="utf-8"))
     assert isinstance(references, list), "source dataset must be a JSON list"
@@ -34,27 +59,32 @@ def main():
 
     rng = random.Random(SEED)
     numbers = [rng.randint(1, 10) for _ in references]
-
-    datasets = {
-        "prefix": [f"{number} {text}" for text, number in zip(references, numbers)],
-        "middle": [insert_at_middle(text, number) for text, number in zip(references, numbers)],
-        "suffix": [f"{text} {number}" for text, number in zip(references, numbers)],
+    dataset_groups = {
+        "arabic": (build_position_datasets(references, numbers), OUTPUT_PATHS),
+        "english": (
+            build_position_datasets(references, [NUMBER_WORDS[number] for number in numbers]),
+            ENGLISH_OUTPUT_PATHS,
+        ),
     }
 
-    for position, questions in datasets.items():
-        assert len(questions) == len(references)
-        assert len(set(questions)) == len(questions), f"duplicates found in {position} dataset"
-        OUTPUT_PATHS[position].write_text(
-            json.dumps(questions, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+    for number_format, (datasets, output_paths) in dataset_groups.items():
+        for position, questions in datasets.items():
+            assert len(questions) == len(references)
+            assert len(set(questions)) == len(questions), (
+                f"duplicates found in {number_format} {position} dataset"
+            )
+            output_paths[position].write_text(
+                json.dumps(questions, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
 
     print(f"Source questions: {len(references)}")
     print(f"Random seed: {SEED}")
     print(f"Number counts: {dict(sorted(Counter(numbers).items()))}")
-    for position, path in OUTPUT_PATHS.items():
-        print(f"{position}: {path.name}")
-        print(f"  first: {datasets[position][0]}")
+    for number_format, (datasets, output_paths) in dataset_groups.items():
+        for position, path in output_paths.items():
+            print(f"{number_format} {position}: {path.name}")
+            print(f"  first: {datasets[position][0]}")
 
 
 if __name__ == "__main__":
