@@ -28,8 +28,14 @@ SYMBOL_OUTPUT_PATHS = {
     "middle": DATASET_DIR / "500_python_code_alpaca_random_symbols_middle_seed42.json",
     "suffix": DATASET_DIR / "500_python_code_alpaca_random_symbols_suffix_seed42.json",
 }
+ASCII_SYMBOL_OUTPUT_PATHS = {
+    "prefix": DATASET_DIR / "500_python_code_alpaca_ascii_symbols_prefix_seed42.json",
+    "middle": DATASET_DIR / "500_python_code_alpaca_ascii_symbols_middle_seed42.json",
+    "suffix": DATASET_DIR / "500_python_code_alpaca_ascii_symbols_suffix_seed42.json",
+}
 MOJIBAKE_MARKER = "锟斤拷"
 SYMBOL_POOL = ("！", "@", "#", "￥", "%", "^", "&", "*")
+ASCII_SYMBOL_POOL = ("!", "@", "#", "$", "%", "+", "&", "*")
 NUMBER_WORDS = {
     1: "one",
     2: "two",
@@ -76,6 +82,11 @@ def main():
         " ".join(symbol_rng.sample(SYMBOL_POOL, symbol_rng.randint(1, 3)))
         for _ in references
     ]
+    ascii_symbol_rng = random.Random(SEED)
+    ascii_symbol_markers = [
+        " ".join(ascii_symbol_rng.sample(ASCII_SYMBOL_POOL, ascii_symbol_rng.randint(1, 3)))
+        for _ in references
+    ]
     dataset_groups = {
         "arabic": (build_position_datasets(references, numbers), OUTPUT_PATHS),
         "english": (
@@ -89,6 +100,10 @@ def main():
         "random_symbols": (
             build_position_datasets(references, symbol_markers),
             SYMBOL_OUTPUT_PATHS,
+        ),
+        "ascii_symbols": (
+            build_position_datasets(references, ascii_symbol_markers),
+            ASCII_SYMBOL_OUTPUT_PATHS,
         ),
     }
 
